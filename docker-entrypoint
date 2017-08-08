@@ -1,0 +1,14 @@
+#!/bin/sh
+#set -e
+if [ -z "${CALENDAR_URL}" ]; then
+  echo "environment variable CALENDAR_URL does not exist"
+  exit 1
+else
+  if ! grep -q "${CALENDAR_URL}" /usr/share/nginx/html/config.js; then
+    sed -i "s|^\thref:.*,$|\thref: '${CALENDAR_URL}',|g" /usr/share/nginx/html/config.js
+    # refresh cache.manifest
+    sed -i "s|^#V.*|#V $(date '+%Y%m%d%H%M%S')|g" /usr/share/nginx/html/cache.manifest
+  fi
+fi
+
+exec "$@"
